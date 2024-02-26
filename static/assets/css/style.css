@@ -1,0 +1,8 @@
+ input[readonly] {
+            background-color: #e0e0e0; /* Light gray background */
+            border-color: #bdbdbd; /* Medium gray border */
+            color: #757575; /* Darker text color for contrast */
+            /* Additional styling for read-only inputs */
+            border: 1px solid #ccc;
+            cursor: not-allowed; /* Change cursor to indicate it's not editable */
+ }

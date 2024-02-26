@@ -4,6 +4,46 @@
 <script src="{{ url_for('static', filename='assets/js/plugins/perfect-scrollbar.min.js') }}"></script>
 <script src="{{ url_for('static', filename='assets/js/plugins/smooth-scrollbar.min.js') }}"></script>
 <script src="{{ url_for('static', filename='assets/js/plugins/chartjs.min.js') }}"></script>
+<script src="{{ url_for('static', filename='assets/js/core/jquery-1.12.4.js') }}"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
 
 <!-- Control Center for Material Dashboard: parallax effects, scripts for the example pages etc -->
-<script src="{{ url_for('static', filename='assets/js/material-dashboard.min.js?v=3.1.0') }}"></script>
+<script src="{{ url_for('static', filename='assets/js/material-dashboard.min.js') }}"></script>
+<!-- Compiled and minified JavaScript -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+
+<!-- Text Input to Date Input Picker  -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var datePickers = document.getElementsByClassName('datepicker');
+
+    // Convert HTMLCollection to Array to use forEach
+    Array.from(datePickers).forEach(function(datePicker) {
+        // Change to date type on focus
+        datePicker.addEventListener('focus', function() {
+            datePicker.type = 'date';
+        });
+
+        // Change back to text type on blur
+        datePicker.addEventListener('blur', function() {
+            // Only change type if date is not selected, to keep showing the selected date
+            if (datePicker.value === '') {
+                datePicker.type = 'text';
+            }
+        });
+
+        // To ensure the format is kept when a date is selected
+        datePicker.addEventListener('change', function() {
+            if (datePicker.value) {
+                var date = new Date(datePicker.value);
+                var day = ("0" + date.getDate()).slice(-2); // Ensure two digits
+                var month = ("0" + (date.getMonth() + 1)).slice(-2); // Ensure two digits
+                var year = date.getFullYear();
+                datePicker.type = 'text';
+                datePicker.value = `${day}-${month}-${year}`; // Format date as yyyy-mm-dd
+            }
+        });
+    });
+});
+</script>

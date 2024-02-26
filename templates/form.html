@@ -4,22 +4,30 @@
 {% include 'head.html' %}
 
 <body class="g-sidenav-show  bg-gray-200">
-  {% include 'sidebar.html' %}>
+{% include 'sidebar.html' %}>
 
-  <main class="main-content position-relative max-height-vh-100 h-100 border-radius-lg ">
+<main class="main-content position-relative max-height-vh-100 h-100 border-radius-lg ">
 
     {% include 'navbar.html' %}
 
     <div class="container-fluid py-4">
 
-      {% include 'footer.html' %}
+        {%set f1 = ["new-transaction"] %}
+
+        <div class="p-4 bg-light">
+            {%if front_data["title"][3] == f1[0] %}
+                {% include 'forms/new-transaction.html' %}
+            {% endif %}
+        </div>
+
+        {% include 'footer.html' %}
     </div>
 
-  </main>
+</main>
 
-  {% include 'script.html' %}
+{% include 'script.html' %}
 
-  <script>
+<script>
     var win = navigator.platform.indexOf('Win') > -1;
     if (win && document.querySelector('#sidenav-scrollbar')) {
       var options = {
@@ -27,7 +35,7 @@
       }
       Scrollbar.init(document.querySelector('#sidenav-scrollbar'), options);
     }
-  </script>
+</script>
 
 </body>
 

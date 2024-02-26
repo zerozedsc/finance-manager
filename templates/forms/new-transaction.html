@@ -1,0 +1,142 @@
+
+
+<title>{{ front_data['title'][1] }}</title>
+
+<form id="transaction-form" action="{{url_for('form', form_type=f1)}}" method="post">
+
+    <div class="container">
+
+        <div class="row">
+            <!-- Type Select Dropdown -->
+            <div class="col s12">
+                <div class="input-group input-group-outline">
+                    <label class="form-label" for="type">Transaction Type:</label>
+                    <input name="type" list="types" type="text" id="autocomplete-input" class="autocomplete form-control" required>
+                    <datalist id="types">
+                <option value="Daily Spending"></option>
+                <option value="Non-Daily Spending"></option>
+                <option value="Travel"></option>
+                <option value="Subscription"></option>
+                <!-- Add other types as needed -->
+            </datalist>
+                </div>
+            </div>
+
+            <!-- Shop Name Input -->
+            <div class="col s12">
+                <div class="input-group input-group-outline">
+                    <label class="form-label" for="shop_name">Shop Name:</label>
+                    <input class="form-control" type="text" id="shop_name" name="shop_name" required>
+                    <datalist id="shops">
+
+                    </datalist>
+
+                </div>
+            </div>
+
+            <!-- Date Picker -->
+            <div class="col s12">
+                <div class="input-group input-group-outline">
+                    <label class="form-label" for="date">Date Transaction:</label>
+                    <input class="form-control datepicker" type="text" id="date" name="date" required>
+
+                </div>
+            </div>
+        </div>
+        <br>
+        <div class="col s12">
+            <button class="btn btn-outline-primary btn-sm mb-0 me-3" type="button" id="add-item"
+                    onclick="addForm()">Add Item
+            </button>
+
+        </div>
+
+        <!-- Item fields will be added here -->
+        <div id="items-container">
+            <div class="item-group mb-4">
+                    <h3 style="color: #999da0; font-size:25px; font-weight: bold; text-shadow: 2px 2px 4px #000000;">Item ${itemCount}:</h3>
+
+                    <div class="input-group input-group-dynamic mb-4">
+                        <input placeholder="Category:" type="text" class="form-control" name="category" required>
+                    </div>
+
+                    <div class="input-group input-group-dynamic mb-4">
+                        <input placeholder="Item Name:" type="text" class="form-control" name="item_name" required>
+                    </div>
+
+                    <div class="input-group input-group-dynamic mb-4">
+                        <input placeholder="Quantity:" type="number" class="form-control" name="quantity" required>
+                    </div>
+
+                    <div class="input-group input-group-dynamic mb-4">
+                        <input placeholder="Unit Measurement:" type="text" class="form-control" name="unit_measurement" required>
+                    </div>
+
+                    <div class="input-group input-group-dynamic mb-4">
+                        <input id="price-tag" placeholder="Item Price[]:" type="number" class="form-control" name="item_price" required>
+                    </div>
+
+                    <div class="input-group input-group-dynamic mb-4">
+                        <input id="tax-tag" placeholder="Tax(%):" type="number" class="form-control" name="tax" required>
+                    </div>
+                </div>
+
+        </div>
+
+        <input id="submit-button" class="btn btn-outline-primary btn-sm mb-0 me-3" type="submit"
+               value="Submit Transaction" hidden>
+
+
+    </div>
+
+    <script>
+        var itemCount = 0;
+
+        function addForm() {
+          var canAddItem = true;
+            // Select all inputs within the form except for the template to be added
+            var inputs = document.querySelectorAll('#transaction-form .form-control:not(.template-input)');
+
+            inputs.forEach(function(input) {
+                // Remove existing 'is-invalid' classes
+                input.classList.remove('is-invalid');
+
+                // Check if input is required and empty
+                if (input.required && !input.value) {
+                    // Prevent item addition
+                    canAddItem = false;
+                    // Highlight the input field
+                    input.classList.add('is-invalid');
+                    input.style.border = '1px solid red';
+                }
+            });
+
+            if (!canAddItem) {
+                alert('Please fill in all required fields.');
+            }
+            else{
+
+
+            itemCount++;
+
+            if (itemCount == 2) {
+                 $('#submit-button').removeAttr('hidden');
+            }
+
+            if (itemCount == 1) {
+                 inputs.forEach(function(input) {
+                    input.readOnly = true;
+                 });
+
+            }
+
+            $('#items-container').empty();
+
+            }
+
+        };
+
+
+    </script>
+
+</form>
