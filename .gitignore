@@ -1,1 +1,6 @@
 /creds/firebase_cred.json
+/testdb.py
+/logs/app.log
+/logs/firebase_db.log
+/logs/local_json.log
+/database/local_db.json

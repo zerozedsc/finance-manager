@@ -1,24 +1,23 @@
-
-
 <title>{{ front_data['title'][1] }}</title>
 
-<form id="transaction-form" action="{{url_for('form', form_type=f1)}}" method="post">
+<form id="transaction-form" action="{{url_for('form', form_type='new-transaction')}}" method="post">
 
     <div class="container">
 
-        <div class="row">
+        <div id="main-four-input" class="row">
             <!-- Type Select Dropdown -->
             <div class="col s12">
                 <div class="input-group input-group-outline">
-                    <label class="form-label" for="type">Transaction Type:</label>
-                    <input name="type" list="types" type="text" id="autocomplete-input" class="autocomplete form-control" required>
+                    <label class="form-label" for="transaction-type">Transaction Type:</label>
+                    <input name="transaction_type" list="types" type="text" id="transaction-type"
+                           class="autocomplete form-control" required>
                     <datalist id="types">
-                <option value="Daily Spending"></option>
-                <option value="Non-Daily Spending"></option>
-                <option value="Travel"></option>
-                <option value="Subscription"></option>
-                <!-- Add other types as needed -->
-            </datalist>
+                        <option value="Daily Spending"></option>
+                        <option value="Non-Daily Spending"></option>
+                        <option value="Travel"></option>
+                        <option value="Subscription"></option>
+                        <!-- Add other types as needed -->
+                    </datalist>
                 </div>
             </div>
 
@@ -26,11 +25,23 @@
             <div class="col s12">
                 <div class="input-group input-group-outline">
                     <label class="form-label" for="shop_name">Shop Name:</label>
-                    <input class="form-control" type="text" id="shop_name" name="shop_name" required>
+                    <input class="form-control" type="text" id="shop-name" name="shop_name" required>
                     <datalist id="shops">
 
                     </datalist>
 
+                </div>
+            </div>
+
+            <!-- cash source-->
+            <div class="col s12">
+                <div class="input-group input-group-outline">
+                    <label class="form-label" for="cash-source">Cash Source:</label>
+                    <input class="form-control" list="cash-sources" type="text" id="cash-source" name="cash_source"
+                           required>
+                    <datalist id="cash-sources">
+
+                    </datalist>
                 </div>
             </div>
 
@@ -42,101 +53,323 @@
 
                 </div>
             </div>
+
         </div>
         <br>
-        <div class="col s12">
-            <button class="btn btn-outline-primary btn-sm mb-0 me-3" type="button" id="add-item"
-                    onclick="addForm()">Add Item
-            </button>
-
+        <div class="row">
+            <div class="col s12">
+                <button class="btn btn-outline-primary btn-sm mb-0 me-3" type="button" id="add-item"
+                        onclick="addForm()">Add Item
+                </button>
+            </div>
         </div>
 
         <!-- Item fields will be added here -->
-        <div id="items-container">
+        <div id="items-container" hidden>
+
             <div class="item-group mb-4">
-                    <h3 style="color: #999da0; font-size:25px; font-weight: bold; text-shadow: 2px 2px 4px #000000;">Item ${itemCount}:</h3>
+                <h3 id="item_index"
+                    style="color: #999da0; font-size:25px; font-weight: bold; text-shadow: 2px 2px 4px #000000;">
+                    Item
+                    1:</h3>
 
-                    <div class="input-group input-group-dynamic mb-4">
-                        <input placeholder="Category:" type="text" class="form-control" name="category" required>
-                    </div>
-
-                    <div class="input-group input-group-dynamic mb-4">
-                        <input placeholder="Item Name:" type="text" class="form-control" name="item_name" required>
-                    </div>
-
-                    <div class="input-group input-group-dynamic mb-4">
-                        <input placeholder="Quantity:" type="number" class="form-control" name="quantity" required>
-                    </div>
-
-                    <div class="input-group input-group-dynamic mb-4">
-                        <input placeholder="Unit Measurement:" type="text" class="form-control" name="unit_measurement" required>
-                    </div>
-
-                    <div class="input-group input-group-dynamic mb-4">
-                        <input id="price-tag" placeholder="Item Price[]:" type="number" class="form-control" name="item_price" required>
-                    </div>
-
-                    <div class="input-group input-group-dynamic mb-4">
-                        <input id="tax-tag" placeholder="Tax(%):" type="number" class="form-control" name="tax" required>
-                    </div>
+                <div class="input-group input-group-dynamic mb-4">
+                    <input id="item_name" placeholder="Item Name:" type="text" class="form-control"
+                           name="item_name"
+                           required>
                 </div>
+
+                <div class="input-group input-group-dynamic mb-4">
+                    <input id="brand_name" placeholder="Brand Name:" type="text" class="form-control"
+                           name="brand_name">
+                </div>
+
+                <div class="input-group input-group-dynamic mb-4">
+                    <input id="category" placeholder="Category:" type="text" class="form-control"
+                           name="category"
+                           required>
+                </div>
+
+                <div class="input-group input-group-dynamic mb-4">
+                    <input id="quantity" placeholder="Quantity:" type="number" class="form-control"
+                           name="quantity"
+                           required>
+                </div>
+
+                <div class="input-group input-group-dynamic mb-4">
+                    <input id="unit" placeholder="Unit Measurement:" type="text" class="form-control"
+                           name="unit_measurement"
+                           required>
+                </div>
+
+                <div class="input-group input-group-dynamic mb-4">
+                    <input id="price-tag" placeholder="Item Price [{{value['currency']}}]:" type="number"
+                           class="form-control"
+                           name="item_price" required>
+                </div>
+
+                <div class="input-group input-group-dynamic mb-4">
+                    <input id="tax-tag" placeholder="Tax(%):" type="number" class="form-control" name="tax"
+                           required>
+                </div>
+            </div>
 
         </div>
 
-        <input id="submit-button" class="btn btn-outline-primary btn-sm mb-0 me-3" type="submit"
-               value="Submit Transaction" hidden>
+        <div id="table-container" hidden>
+            <div class="container-fluid py-4">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card my-4">
+                            <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
+                                <div class="bg-gradient-primary shadow-primary border-radius-lg pt-4 pb-3">
+                                    <div class="row">
+                                        <div class="col s7 pull-s3">
+                                            <h6 id="table-title" class="text-white text-capitalize ps-3">Transaction
+                                                Items:
+                                            </h6>
+                                        </div>
+                                        <div class="col s3 push-s7">
+                                            <span id="total-price"
+                                                                          class="text-white text-capitalize ps-3"
+                                                                          style="text-align:left;">Total Price: </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-body px-0 pb-2">
+                                <div class="table-responsive p-0">
+                                    <table id="items-table" class="table align-items-center mb-0">
+                                        <thead>
+                                        <tr>
+                                            {% for tag in data_tags%}
+                                            {% if tag != "shop name" and tag != "date" and tag != "type" and tag !=
+                                            "cash source" %}
+                                            {% if tag == "price" %}
+                                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                                {{tag}} ({{value['currency']}})
+                                            </th>
+                                            {% elif tag == "tax" %}
+                                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                                {{tag}} (%)
+                                            </th>
+                                            {% else %}
+                                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                                {{tag}}
+                                            </th>
+                                            {% endif %}
+                                            {% endif %}
+                                            {% endfor %}
+                                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                                Total Price
+                                            </th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr id="tr-template" hidden>
+                                            <td id="td-item" class="align-middle text-center text-sm">
+                                                <h6 class="mb-0 text-sm">Lorem Ipsum is simply dummy text of the
+                                                    printing</h6>
+                                            </td>
+                                            <td id="td-brand" class="align-middle text-center text-sm">
+                                                <p class="text-xs font-weight-bold mb-0">Brand Name</p>
+                                            </td>
+                                            <td id="td-category" class="align-middle text-center text-sm">
+                                                <span class="badge badge-sm bg-gradient-primary">Category</span>
+                                            </td>
+                                            <td id="td-qty" class="align-middle text-center text-sm">
+                                                <span class="text-secondary text-xs font-weight-bold">23</span>
+                                            </td>
+                                            <td id="td-unit" class="align-middle text-center text-sm">
+                                                <span class="badge badge-sm bg-gradient-warning">Kg</span>
+                                            </td>
+                                            <td id="td-price" class="align-middle text-center text-sm">
+                                                <span class="text-secondary text-xs font-weight-bold">1000</span>
+                                            </td>
+                                            <td id="td-tax" class="align-middle text-center text-sm">
+                                                <span class="text-secondary text-xs font-weight-bold">8</span>
+                                            </td>
+                                            <td id="td-total" class="align-middle text-center text-sm">
+                                                <span class="text-secondary text-xs font-weight-bold">10000</span>
+                                            </td>
+
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="item-group mb-4">
+                <input id="submit-transaction" type="text" value="" name="submit_transaction" hidden>
+                <button class="btn btn-outline-primary btn-sm mb-0 me-3" type="button" id="submit-button"
+                        onclick="submitForm()">Submit Transaction
+                </button>
+            </div>
+        </div>
 
 
-    </div>
+        <script>
+            var itemCount = 0;
+            var totalPrice = 0;
+            var transactionItem = "";
 
-    <script>
-        var itemCount = 0;
+            function addForm() {
+                var canAddItem = true;
+                var item_container = document.getElementById('items-container');
+                var table_container = document.getElementById('table-container');
 
-        function addForm() {
-          var canAddItem = true;
-            // Select all inputs within the form except for the template to be added
-            var inputs = document.querySelectorAll('#transaction-form .form-control:not(.template-input)');
+                // Get the input values
+                var transactionType = document.getElementById('transaction-type');
+                var shopName = document.getElementById('shop-name');
+                var date = document.getElementById('date');
+                var cashSource = document.getElementById('cash-source');
+                var itemIndex = document.getElementById('item_index');
+                var tableTitle = document.getElementById('table-title');
+                var tableBody = document.getElementById('items-table').getElementsByTagName('tbody');
 
-            inputs.forEach(function(input) {
-                // Remove existing 'is-invalid' classes
-                input.classList.remove('is-invalid');
 
-                // Check if input is required and empty
-                if (input.required && !input.value) {
-                    // Prevent item addition
+                if (!transactionType.value || !shopName.value || !date.value || !cashSource.value) {
                     canAddItem = false;
-                    // Highlight the input field
-                    input.classList.add('is-invalid');
-                    input.style.border = '1px solid red';
+                    if (!transactionType.value) {
+                        transactionType.style.border = '1px solid red';
+                    }
+                    if (!shopName.value) {
+                        shopName.style.border = '1px solid red';
+                    }
+                    if (!date.value) {
+                        date.style.border = '1px solid red';
+                    }
+
+                    if (!cashSource.value) {
+                        cashSource.style.border = '1px solid red';
+                    }
                 }
-            });
 
-            if (!canAddItem) {
-                alert('Please fill in all required fields.');
+                if (!canAddItem) {
+                    alert('Please fill in all required fields.');
+
+                }
+                else{
+
+                itemCount++;
+
+                itemIndex.innerHTML = "Item " + itemCount + ":";
+
+                if (itemCount >= 2) {
+                    table_container.removeAttribute('hidden');
+
+                    var check_required = true;
+                    var inputs = document.querySelectorAll('#transaction-form .form-control:not(.template-input)');
+
+                    inputs.forEach(function(input) {
+                        // Remove existing 'is-invalid' classes
+                        input.classList.remove('is-invalid');
+
+                        // Check if input is required and empty
+                        if (input.required && !input.value) {
+                            // Prevent item addition
+                            check_required = false;
+                            // Highlight the input field
+                            input.classList.add('is-invalid');
+                        }
+                    });
+
+                    if (!check_required){
+                        alert('Please fill in all required fields in the form.');
+                        itemCount--;
+                        itemIndex.innerHTML = "Item " + itemCount + ":";
+                    }
+                    else{
+                        var itemStr = "";
+                        itemStr = addItemToTable();
+                        transactionItem += itemStr + ";";
+                        var submitTransaction = document.getElementById('submit-transaction');
+                        submitTransaction.value = transactionItem;
+                        console.log(submitTransaction.value);
+                    }
+
+
+                }
+                else if (itemCount == 1){
+                    transactionType.setAttribute('readonly', 'readonly');
+                    shopName.setAttribute('readonly', 'readonly');
+                    date.setAttribute('readonly', 'readonly');
+                    cashSource.setAttribute('readonly', 'readonly');
+                    item_container.removeAttribute('hidden');
+                    tableTitle.innerHTML = "Transaction Items: " + "(" + transactionType.value + ", "
+                     + shopName.value + ", " + date.value + ")";
+                }
+
             }
-            else{
+            };
+
+            function addItemToTable() {
+                // Get the input values
+                var itemName = document.getElementById('item_name').value;
+                var brandName = document.getElementById('brand_name').value;
+                var category = document.getElementById('category').value; // Adjusted selector for category
+                var quantity = document.getElementById('quantity').value;
+                var unitMeasurement = document.getElementById('unit').value;
+                var itemPrice = document.getElementById('price-tag').value;
+                var tax = document.getElementById('tax-tag').value;
+                var itemStr = "";
+                var calculatePrice = (parseFloat(itemPrice) + parseFloat(itemPrice) * (parseFloat(tax)/100)).toFixed(2); // Calculate total with tax
+                totalPrice += parseInt(calculatePrice);
+
+                // Clone the template row
+                var template = document.getElementById('tr-template');
+                var clone = template.cloneNode(true);
+                clone.id = ""; // Remove or change the ID
+                clone.hidden = false; // Make sure the cloned row is visible
+
+                // Update the clone with the input values
+                clone.querySelector('h6').textContent = itemName.toUpperCase();
+                clone.querySelector('#td-brand p').textContent = brandName;
+                clone.querySelector('#td-category span').textContent = category;
+                clone.querySelector('#td-qty span').textContent = quantity;
+                clone.querySelector('#td-unit span').textContent = unitMeasurement;
+                clone.querySelector('#td-price span').textContent = itemPrice;
+                clone.querySelector('#td-tax span').textContent = tax;
+                clone.querySelector('#td-total span').textContent = calculatePrice;
+                document.getElementById('total-price').innerHTML = "Total Price: " + totalPrice.toString() + " {{value['currency']}}";
+
+                itemStr = itemName.toUpperCase() + "," + brandName + "," + category.toUpperCase() + "," + quantity + "," + unitMeasurement.toUpperCase() + "," + itemPrice + "," + tax + "," + (parseFloat(itemPrice) + parseFloat(itemPrice) * (parseFloat(tax)/100)).toFixed(2);
 
 
-            itemCount++;
+                // Append the updated clone to the tbody
+                document.querySelector('#items-table tbody').appendChild(clone);
 
-            if (itemCount == 2) {
-                 $('#submit-button').removeAttr('hidden');
+                // Optionally, clear the form inputs after adding
+                document.querySelectorAll('.item-group input').forEach(input => input.value = "");
+
+                return itemStr;
+
+            };
+
+        </script>
+
+        <script>
+            function submitForm() {
+                // Check if the hidden input field is not empty
+                var submitTransactionInput = document.getElementById('submit-transaction');
+                if (!submitTransactionInput.value) {
+                    alert('Please put something in the submit transaction input.');
+                    return; // Stop the function here
+                }
+
+                // Optionally, clear or remove the items-container to prevent submitting empty required fields
+                // Note: Adjust this part based on your actual requirements. For example, if you want to keep the data but not submit it, consider disabling the fields instead.
+                var itemsContainer = document.getElementById('items-container');
+                itemsContainer.innerHTML = ''; // This clears the content. To remove the element entirely, use itemsContainer.remove();
+
+                // Submit the form
+                document.getElementById('transaction-form').submit();
             }
 
-            if (itemCount == 1) {
-                 inputs.forEach(function(input) {
-                    input.readOnly = true;
-                 });
-
-            }
-
-            $('#items-container').empty();
-
-            }
-
-        };
-
-
-    </script>
-
+        </script>
 </form>

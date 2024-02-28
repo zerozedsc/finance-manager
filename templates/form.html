@@ -12,10 +12,9 @@
 
     <div class="container-fluid py-4">
 
-        {%set f1 = ["new-transaction"] %}
 
         <div class="p-4 bg-light">
-            {%if front_data["title"][3] == f1[0] %}
+            {%if front_data["title"][3] == "new-transaction" %}
                 {% include 'forms/new-transaction.html' %}
             {% endif %}
         </div>
