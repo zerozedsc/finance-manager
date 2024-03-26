@@ -1,8 +1,10 @@
- input[readonly] {
-            background-color: #e0e0e0; /* Light gray background */
-            border-color: #bdbdbd; /* Medium gray border */
-            color: #757575; /* Darker text color for contrast */
-            /* Additional styling for read-only inputs */
-            border: 1px solid #ccc;
-            cursor: not-allowed; /* Change cursor to indicate it's not editable */
+#toast-container {
+        position: fixed;
+        top: 1rem;
+        right: 1rem;
+        z-index: 1050;
+}
+
+.toast {
+        border-radius: 12px; /* Your desired border-radius */
  }

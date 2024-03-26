@@ -1,23 +1,23 @@
-
 <aside class="sidenav navbar navbar-vertical navbar-expand-xs border-0 border-radius-xl my-3 fixed-start ms-3 bg-gradient-dark"
        id="sidenav-main">
     <div class="sidenav-header">
         <i class="fas fa-times p-3 cursor-pointer text-white opacity-5 position-absolute end-0 top-0 d-none d-xl-none"
            aria-hidden="true" id="iconSidenav"></i>
         <a class="navbar-brand m-0" href="{{ url_for('home') }}" target="_blank">
-    <h5 style="color: #ffffff; font-size:25px; font-weight: bold; text-shadow: 2px 2px 4px #000000;">
-        Finance Planner
-    </h5>
-</a>
+            <h5 style="color: #ffffff; font-size:25px; font-weight: bold; text-shadow: 2px 2px 4px #000000;">
+                Finance Planner
+            </h5>
+        </a>
 
 
     </div>
     <hr class="horizontal light mt-0 mb-2">
     <div class="collapse navbar-collapse  w-auto " id="sidenav-collapse-main">
         <ul class="navbar-nav">
-            {% set pagename = ['Main Dashboard']%}
+            {% set pagename = ['Main Dashboard', 'Tables']%}
             <li class="nav-item">
-                <a class="nav-link text-white {{ 'active bg-gradient-primary' if front_data['title'][1] == pagename[0] else '' }}" href="{{ url_for('home') }}">
+                <a class="nav-link text-white {{ 'active bg-gradient-primary' if front_data['title'][2] == pagename[0] else '' }}"
+                   href="{{ url_for('home') }}">
                     <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
                         <i class="material-icons opacity-10">dashboard</i>
                     </div>
@@ -25,12 +25,27 @@
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link text-white {{ 'active bg-gradient-primary' if front_data['title'][1] == '' else '' }}" href="../pages/tables.html">
+                <a class="nav-link dropdown-toggle text-white {{ 'active bg-gradient-primary' if front_data['title'][2] == pagename[1] else '' }}"
+                   href="#" id="navbarDropdown" role="button"
+                   data-bs-toggle="dropdown" aria-expanded="true">
                     <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
-                        <i class="material-icons opacity-10">table_view</i>
+                        <i class="material-icons opacity-10">analytics</i>
                     </div>
-                    <span class="nav-link-text ms-1">Tables</span>
+                    <span class="nav-link-text ms-1">{{pagename[1]}}</span>
                 </a>
+                <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end" aria-labelledby="navbarDropdown">
+                    {% for t_name in front_data['navbar']['transaction'] %}
+                    <li class="nav-link"><a class="dropdown-item nav text-white" href="/table/{{t_name}}">
+
+                        <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
+                            <i class="material-icons opacity-10">segment</i>
+                        </div>
+                        <span class="nav-link-text ms-1">{{t_name}}</span></a></li>
+                    {% endfor %}
+
+
+                    <!-- Add more items here as needed -->
+                </ul>
             </li>
             <li class="nav-item">
                 <a class="nav-link text-white " href="../pages/billing.html">

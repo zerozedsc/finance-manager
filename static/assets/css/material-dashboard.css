@@ -2747,7 +2747,8 @@ progress {
   font-size: 0.875rem;
   font-weight: 400;
   line-height: 1.5rem;
-  color: #495057;
+  /*color: #495057;*/
+  color: #cbcbcb;
   background-color: transparent;
   background-clip: padding-box;
   border: 1px solid #d2d6da;
@@ -10760,7 +10761,7 @@ fieldset:disabled .btn {
 }
 
 .bg-dark {
-  background-color: #344767 !important;
+  background-color: #1e2127 !important;
 }
 
 .bg-white {
@@ -10780,7 +10781,7 @@ fieldset:disabled .btn {
 }
 
 .bg-gray-100 {
-  background-color: #f8f9fa !important;
+  /*background-color: #f8f9fa !important;*/
 }
 
 .bg-gray-200 {

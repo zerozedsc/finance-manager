@@ -11,6 +11,13 @@
     {% include 'navbar.html' %}
 
     <div class="container-fluid py-4">
+
+      <div class="p-4 bg-gray-500-">
+            {%if front_data["title"][3] == front_data['navbar']['transaction'][0] %}
+                {% include 'tables/daily-table.html' %}
+            {% endif %}
+        </div>
+
       
       {% include 'footer.html' %}
     </div>
