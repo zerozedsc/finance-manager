@@ -1,5 +1,6 @@
 from flask import Flask, render_template, redirect, url_for, request, flash, jsonify, abort
 from database.firebase_db import *
+from database.local_db import *
 from configs.config import *
 
 app = Flask(__name__)
@@ -17,8 +18,9 @@ NAVBAR = {"transaction": [k for k in TRANSACTIONS_TYPE], }
 # start collecting require data from firebase
 # check local_db.json
 with app.app_context():
-    if LOCAL_SAVE:
-        LOCAL_DATA = check_localdb()
+    LOCAL_DATA = check_localdb()
+
+    if CLOUD_SAVE and FIREBASE_DB_USE:
         if not LOCAL_DATA:
             fb2local()
         else:

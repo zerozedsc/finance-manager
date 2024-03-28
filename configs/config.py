@@ -1,6 +1,5 @@
 from datetime import datetime
 from pprint import pprint
-from flask import current_app
 import time, logging, json, os, sys, uuid
 
 # Global Constants
@@ -8,13 +7,13 @@ MAIN_TITLE = "Finance Planner"
 CURRENCY = "JPY"
 DATETIME_FT = '%d-%m-%Y %H:%M:%S'
 DATE_FT = '%d-%m-%Y'
-LOCAL_SAVE = True
+CLOUD_SAVE = True
 LOCAL_DATA = {}
 DEBUG = True
+FIREBASE_DB_USE = True
 
 
 # logs function
-
 def create_logs(log_name, filename, log_message, status='info'):
     log_format = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
     foldername = "logs"
