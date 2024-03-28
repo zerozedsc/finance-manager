@@ -5,3 +5,4 @@
 /logs/local_json.log
 /database/local_db.json
 /database/test_db.json
+/creds/flask_key.txt

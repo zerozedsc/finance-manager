@@ -1,5 +1,6 @@
 from datetime import datetime
 from pprint import pprint
+from flask import Flask, render_template, redirect, url_for, request, flash, jsonify, abort
 import time, logging, json, os, sys, uuid
 
 # Global Constants
@@ -7,10 +8,18 @@ MAIN_TITLE = "Finance Planner"
 CURRENCY = "JPY"
 DATETIME_FT = '%d-%m-%Y %H:%M:%S'
 DATE_FT = '%d-%m-%Y'
-CLOUD_SAVE = True
+CLOUD_SAVE = False
 LOCAL_DATA = {}
 DEBUG = True
 FIREBASE_DB_USE = True
+
+app = Flask(__name__)
+
+if os.path.exists("creds/flask_key.txt"):
+    with open("creds/flask_key.txt", "r") as f:
+        app.secret_key = f.read()
+else:
+    app.secret_key = 'secret'
 
 
 # logs function

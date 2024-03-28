@@ -57,7 +57,6 @@ def form(form_type):
 
                 value_content['shops'] = item_data
 
-
             except Exception as e:
                 create_logs("form-new-transaction", "app", f"Error: {e}", status='error')
                 value_content['shops'] = {}

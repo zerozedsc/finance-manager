@@ -3,10 +3,13 @@ from configs.config import *
 import firebase_admin
 
 # Initialize Firebase Admin SDK
-cred = credentials.Certificate('creds/firebase_cred.json')
-firebase_admin.initialize_app(cred)
+try:
+    cred = credentials.Certificate('creds/firebase_cred.json')
+    firebase_admin.initialize_app(cred)
 
-db = firestore.client()
+    db = firestore.client()
+except Exception as e:
+    create_logs("firebase_db", "app", f"Failed to initialize Firebase Admin SDK: {e}", status='error')
 
 
 # firestore functions
@@ -28,17 +31,16 @@ def add_data(collection_name, doc_id, add_type="collection", field_name="", data
             LOCAL_DATA["_local"]["collections"] = collection
             with open('local_db.json', 'w') as file:
                 json.dump(LOCAL_DATA, file, indent=4)
-            current_app.logger.info(f"Collection '{collection_name}' is now added to local JSON file.")
             create_logs("add_collection", "local_json",
                         f"Collection '{collection_name}' is now added to local JSON file.",
                         status='info')
 
         if len(data) < 1:
-            current_app.logger.error("No data provided for Firestore add.")
+            create_logs("add_data", "firebase_db", "No data provided for Firestore add.", status='error')
             return False
 
         if type(data) != dict and add_type == "new document":
-            current_app.logger.error("Invalid data type for Firestore add into document.")
+            create_logs("add_data", "firebase_db", "Data must be a dictionary for new document.", status='error')
             return False
 
         if add_type == "new collection":
@@ -49,7 +51,8 @@ def add_data(collection_name, doc_id, add_type="collection", field_name="", data
         doc_ref = db.collection(collection_name).document(doc_id)
 
         if not doc_ref.get().exists:
-            current_app.logger.error(f"Document '{doc_id}' does not exist in collection '{collection_name}'.")
+            create_logs("add_data", "firebase_db",
+                        f"Document '{doc_id}' does not exist in collection '{collection_name}'.", )
             return False
 
         if add_type == "exist field":
@@ -70,11 +73,11 @@ def add_data(collection_name, doc_id, add_type="collection", field_name="", data
             return True
 
         else:
-            current_app.logger.error("Invalid firebase add type. Please use 'field', 'new document', or 'new field'.")
+            create_logs("add_data", "firebase_db",
+                        "Invalid firebase add type. Please use 'new collection', 'new document', 'exist field', or 'new field'.", )
             return False
 
     except Exception as e:
-        current_app.logger.error(f"Failed to add data to Firestore: {e}")
         create_logs("add_data", "firebase_db", f"Failed to add data to Firestore: {e}", status='error')
         return False
 
@@ -85,19 +88,21 @@ def update_data(collection_name, doc_id, update_type="one", data={}, field_name=
     """Update a document in the Firestore database."""
     try:
         if len(data) < 1:
-            current_app.logger.error("No data provided for Firestore update.")
+            create_logs("update_data", "firebase_db", "No data provided for Firestore update.", status='error')
             return False
 
         doc_ref = db.collection(collection_name)
 
         if not doc_ref.limit(1).get():
-            current_app.logger.error(f"Collection '{collection_name}' does not exist in Firestore.")
+            create_logs("update_data", "firebase_db", f"Collection '{collection_name}' does not exist in Firestore.",
+                        status='error')
             return False
 
         doc_ref = doc_ref.document(doc_id)
 
         if not doc_ref.get().exists:
-            current_app.logger.error(f"Document '{doc_id}' does not exist in collection '{collection_name}'.")
+            create_logs("update_data", "firebase_db",
+                        f"Document '{doc_id}' does not exist in collection '{collection_name}'.", status='error')
             return False
 
         if update_type == "one":
@@ -117,11 +122,11 @@ def update_data(collection_name, doc_id, update_type="one", data={}, field_name=
             create_logs("update_all", "firebase_db", f"Document '{doc_id}' is now updated.", status='info')
             return True
         else:
-            current_app.logger.error("Invalid firebase update type. Please use 'one', 'field', or 'all'.")
+            create_logs("update_data", "firebase_db",
+                        "Invalid firebase update type. Please use 'one', 'field', or 'all'.", status='error')
             return False
 
     except Exception as e:
-        current_app.logger.error(f"Failed to update data in Firestore: {e}")
         create_logs("firebase_db", "firebase_db", f"Failed to update data in Firestore: {e}", status='error')
         return False
 
@@ -131,29 +136,29 @@ def delete_data(collection_name, doc_id, delete_type="document", field_name="") 
     """Delete a document from the Firestore database."""
     try:
         if doc_id == "":
-            current_app.logger.error("No document ID provided for Firestore delete.")
+            create_logs("delete_data", "firebase_db", "No document ID provided for Firestore delete.", status='error')
             return False
 
         if field_name == "" and (delete_type == "del_field" or delete_type == "empty_field"):
-            current_app.logger.error("No field name provided for Firestore delete.")
+            create_logs("delete_data", "firebase_db", "No field name provided for Firestore delete.", status='error')
             return False
 
         doc_ref = db.collection(collection_name)
 
         if not doc_ref.limit(1).get():
-            current_app.logger.error(f"Collection '{collection_name}' does not exist in Firestore.")
+            create_logs("delete_data", "firebase_db", f"Collection '{collection_name}' does not exist in Firestore.",
+                        status='error')
             return False
 
         doc_ref = doc_ref.document(doc_id)
 
         if not doc_ref.get().exists:
-            current_app.logger.error(
-                f"Cant Delete, Document '{doc_id}' does not exist in collection '{collection_name}'.")
+            create_logs("delete_data", "firebase_db",
+                        f"Document '{doc_id}' does not exist in collection '{collection_name}'.", status='error')
             return False
 
         if delete_type == "document":
             doc_ref.delete()
-            current_app.logger.info(f"Document '{doc_id}' is now deleted.")
             create_logs("delete_document", "firebase_db", f"Document '{doc_id}' is now deleted.", status='warning')
             return True
         elif delete_type == "del_field":
@@ -161,13 +166,11 @@ def delete_data(collection_name, doc_id, delete_type="document", field_name="") 
             current_data = doc.to_dict()
             del current_data[field_name]
             doc_ref.update(current_data)
-            current_app.logger.info(f"Field '{field_name}' in document '{doc_id}' is now deleted.")
             create_logs("delete_field", "firebase_db", f"Field '{field_name}' in document '{doc_id}' is now deleted.",
                         status='warning')
             return True
         elif delete_type == "empty_field":
             doc_ref.update({field_name: ""})
-            current_app.logger.info(f"Field '{field_name}' in document '{doc_id}' is now empty.")
             create_logs("empty_field", "firebase_db", f"Field '{field_name}' in document '{doc_id}' is now empty.",
                         status='warning')
             return True
@@ -179,12 +182,12 @@ def delete_data(collection_name, doc_id, delete_type="document", field_name="") 
                         status='warning')
             return True
         else:
-            current_app.logger.error(
-                "Invalid firebase delete type. Please use 'document', 'del_field', or 'empty_field'.")
+            create_logs("delete_data", "firebase_db",
+                        "Invalid firebase delete type. Please use 'document', 'del_field', 'empty_field', or 'collection'.",
+                        status='error')
             return False
 
     except Exception as e:
-        current_app.logger.error(f"Failed to delete data from Firestore: {e}")
         create_logs("delete_data", "firebase_db", f"Failed to delete data from Firestore: {e}", status='error')
         return False
 
@@ -196,7 +199,8 @@ def get_collection(collection_name) -> any:
         doc_ref = db.collection(collection_name)
 
         if not doc_ref.limit(1).get():
-            current_app.logger.error(f"Collection '{collection_name}' does not exist in Firestore.")
+            create_logs("get_collection", "firebase_db",
+                        f"Collection '{collection_name}' does not exist in Firestore.", )
             return ""
 
         docs = doc_ref.get()
@@ -205,7 +209,6 @@ def get_collection(collection_name) -> any:
         return docs
 
     except Exception as e:
-        current_app.logger.error(f"Failed to retrieve data from Firestore: {e}")
         create_logs("get_collection", "firebase_db", f"Failed to retrieve data from Firestore: {e}", status='error')
         return ""
 
@@ -217,7 +220,8 @@ def get_data(collection_name, doc_id="", gettype="field", field_name="") -> any:
         doc_ref = db.collection(collection_name)
 
         if not doc_ref.limit(1).get():
-            current_app.logger.error(f"Cant get data, Collection '{collection_name}' does not exist in Firestore.")
+            create_logs("get_collection", "firebase_db",
+                        f"Collection '{collection_name}' does not exist in Firestore.", )
             return ""
 
         elif gettype == "collection":
@@ -231,13 +235,14 @@ def get_data(collection_name, doc_id="", gettype="field", field_name="") -> any:
 
         doc = doc_ref.document(doc_id).get()
         if not doc.exists:
-            current_app.logger.error(
-                f"Cant get data, Document '{doc_id}' does not exist in collection '{collection_name}'.")
+            create_logs("get_document", "firebase_db",
+                        f"Document '{doc_id}' does not exist in collection '{collection_name}'.",
+                        status='error')
             return ""
 
         data = doc.to_dict()
         if field_name not in data:
-            current_app.logger.error(f"Cant get data, Field '{field_name}' does not exist in document '{doc_id}'.")
+            create_logs("get_field", "firebase_db", f"Field '{field_name}' does not exist in document '{doc_id}'.", )
             return ""
 
         if gettype == "document":
@@ -251,7 +256,8 @@ def get_data(collection_name, doc_id="", gettype="field", field_name="") -> any:
             return data[field_name]
 
         else:
-            current_app.logger.error("Invalid firebase get type. Please use 'field', 'document', or 'collection'.")
+            create_logs("get_data", "firebase_db",
+                        "Invalid firebase get type. Please use 'collection', 'document', or 'field'.", status='error')
             return ""
 
     except Exception as e:
@@ -264,7 +270,7 @@ def str2json(data) -> dict:
     try:
         return json.loads(data)
     except Exception as e:
-        current_app.logger.error(f"Failed to convert string to JSON: {e}")
+        create_logs("str2json", "app", f"Failed to convert string to JSON: {e}", status='error')
         return {}
 
 
@@ -275,7 +281,7 @@ def fb_str2json(collection_name, doc_id, field_name) -> dict:
         data = doc.to_dict()
         return str2json(data[field_name])
     except Exception as e:
-        current_app.logger.error(f"Failed to convert string to JSON: {e}")
+        create_logs("fb_str2json", "firebase_db", f"Failed to convert string to JSON: {e}", status='error')
         return {}
 
 
@@ -285,7 +291,7 @@ def fb_json2str(collection_name, doc_id, field_name, data) -> bool:
         doc_ref.update({field_name: json.dumps(data)})
         return True
     except Exception as e:
-        current_app.logger.error(f"Failed to convert JSON to string: {e}")
+        create_logs("fb_json2str", "firebase_db", f"Failed to convert JSON to string: {e}", status='error')
         return False
 
 
@@ -299,7 +305,6 @@ def fb2local() -> bool:
         if not os.path.exists(filepath):
             with open(filepath, 'w', encoding='utf-8') as f:
                 json.dump({}, f, indent=4, ensure_ascii=False)
-            current_app.logger.info("Local JSON file created.")
             create_logs("create_file", "local_json", "Local JSON file created.", status='info')
         else:
             with open(filepath, 'r', encoding='utf-8') as f:
@@ -327,7 +332,6 @@ def fb2local() -> bool:
                     check_data["_local"]["collections"].append(collection)
                 data = get_data(collection, gettype="collection")
                 check_data[collection] = data
-                current_app.logger.info(f"Data from collection '{collection}' saved to local JSON file.")
                 create_logs(f"catch-{collection}", "local_json",
                             f"Data from collection '{collection}' saved to local JSON file.", status='info')
 
@@ -338,10 +342,9 @@ def fb2local() -> bool:
         with open(filepath, 'w', encoding='utf-8') as f:
             json.dump(check_data, f, indent=4, ensure_ascii=False)
 
-        return True
+        return check_data
 
     except Exception as e:
-        current_app.logger.error(f"Failed to save data to local JSON: {e}")
         create_logs("local_json", "local_json", f"Failed to save data to local JSON: {e}", status='error')
         return False
 
@@ -350,37 +353,3 @@ def fb2local() -> bool:
 def local2fb(collection_name: list, doc_id, field_name, data):
     '''Save local data to Firebase'''
     pass
-
-
-def local_save_all(data):
-    '''Save all local data to Firebase'''
-    local_db_path = "database/local_db.json"
-    try:
-        with open(local_db_path, 'w', encoding='utf-8') as file:
-            json.dump(data, file, indent=4, ensure_ascii=False)
-        create_logs("local-save", "local_json", "Local data saved when exit", status='info')
-    except Exception as e:
-        create_logs("local-save", "local_json", f"Failed to save local data when exit: {e}", status='error')
-
-
-def save_local_backup(data, filepath):
-    '''Save local data to a backup file'''
-    try:
-        with open(filepath, encoding='utf-8') as file:
-            json.dump(data, file, indent=4, ensure_ascii=False)
-        create_logs("local-backup", "local_json", "Local data saved to backup", status='info')
-    except Exception as e:
-        create_logs("local-backup", "local_json", f"Failed to save local data to backup: {e}", status='error')
-
-
-def save_test_local(data, filepath):
-    '''Save local data to a test file'''
-    try:
-        with open(filepath, 'w', encoding='utf-8') as file:
-            json.dump(data, file, indent=4, ensure_ascii=False)
-        create_logs("local-backup", "local_json", "Local data saved to backup", status='info')
-    except Exception as e:
-        create_logs("local-backup", "local_json", f"Failed to save local data to backup: {e}", status='error')
-
-
-
