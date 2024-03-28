@@ -4,6 +4,14 @@ from configs.config import *
 
 create_logs("app", "app", "App started", status='info')
 
+app = Flask(__name__)
+
+if os.path.exists("creds/flask_key.txt"):
+    with open("creds/flask_key.txt", "r") as f:
+        app.secret_key = f.read()
+else:
+    app.secret_key = 'secret'
+
 INFO_LEVEL = ['primary', 'secondary', 'success', 'danger', 'warning', 'info', 'light', 'dark']
 TRANSACTIONS_TYPE = ['Daily Spending', 'Non-Daily Spending', 'Bills', 'Scholarship', 'Travel', 'Subscription']
 FORM_TYPE = ["new-transaction"]

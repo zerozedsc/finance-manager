@@ -13,14 +13,6 @@ LOCAL_DATA = {}
 DEBUG = True
 FIREBASE_DB_USE = True
 
-app = Flask(__name__)
-
-if os.path.exists("creds/flask_key.txt"):
-    with open("creds/flask_key.txt", "r") as f:
-        app.secret_key = f.read()
-else:
-    app.secret_key = 'secret'
-
 
 # logs function
 def create_logs(log_name, filename, log_message, status='info'):
