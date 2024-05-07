@@ -17,7 +17,7 @@ TRANSACTIONS_TYPE = ['Daily Spending', 'Non-Daily Spending', 'Bills', 'Scholarsh
 FORM_TYPE = ["new-transaction"]
 
 # navbar data
-NAVBAR = {"transaction": [k for k in TRANSACTIONS_TYPE], }
+NAVBAR = {"transaction": [k for k in ['Spending', 'Bills&Subscription', 'Scholarship&Jobs']], }
 
 # start collecting require data from local, if firebase true then check firebase data
 with app.app_context():
@@ -59,3 +59,5 @@ with app.app_context():
 
 app.jinja_env.filters['fromjson'] = from_json
 app.jinja_env.filters['gettype'] = get_type
+app.jinja_env.filters['slashescape'] = slash_escape
+app.jinja_env.filters['rmspace'] = rmspace

@@ -164,9 +164,9 @@ def compare_datetime(datetime_str1, datetime_str2) -> bool:
 # filter for jinja
 def from_json(value):
     try:
-        if type(value) == dict:
+        if type(value) is dict:
             value = json.dumps(value)
-        send_json = json.loads(value)
+        send_json = jsonify(value)
         return send_json
     except json.JSONDecodeError as e:
         create_logs("from_json", "app", f"convert to json.JSONDecodeError error: {e}", status='error')
@@ -179,3 +179,14 @@ def from_json(value):
 
 def get_type(value):
     return type(value)
+
+
+def slash_escape(value):
+    if "/" in value:
+        return value.replace("/", "'")
+    if "'" in value:
+        return value.replace("'", "/")
+
+
+def rmspace(value):
+    return value.replace(" ", "")

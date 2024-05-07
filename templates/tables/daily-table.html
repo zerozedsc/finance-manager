@@ -1,18 +1,458 @@
 <title>{{ front_data['title'][1] }}</title>
 
-  <!-- Dropdown Trigger -->
-  <a class='dropdown-trigger btn' href='#' data-target='dropdown1'>Drop Me!</a>
+<div class="row mb-4">
+    <div class="card bg-dark">
+        <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2 bg-transparent">
+            <div class="bg-gradient-primary shadow-primary border-radius-lg py-3 pe-1">
+                <h4 class="text-white text-center">Pick Date</h4>
+            </div>
+        </div>
+        <div class="card-body">
+            <div id="main-four-input" class="row">
+                <!-- Year Select -->
+                <div class="col s12">
+                    <div class="input-group input-group-outline">
+                        <select name="spend-type" id="spend-type" class="form-control">
+                            <option value="ALL">ALL</option>
+                            <option value="Daily Spending">Daily Spending</option>
+                            <option value="Non-Daily Spending">Non-Daily Spending</option>
+                        </select>
+                    </div>
+                </div>
 
-  <!-- Dropdown Structure -->
-  <ul id='dropdown1' class='dropdown-content'>
-    <li><a href="#!">one</a></li>
-    <li><a href="#!">two</a></li>
-    <li class="divider" tabindex="-1"></li>
-    <li><a href="#!">three</a></li>
-    <li><a href="#!"><i class="material-icons">view_module</i>four</a></li>
-    <li><a href="#!"><i class="material-icons">cloud</i>five</a></li>
-  </ul>
+                <!-- Year Select -->
+                <div class="col s12">
+                    <div class="input-group input-group-outline">
+                        <label class="form-label" for="year-input">Year:</label>
+                        <input name="year-input" list="years" type="text" id="year-input"
+                               class="autocomplete form-control">
+                        <datalist id="years">
+
+                        </datalist>
+                    </div>
+                </div>
+
+                <!-- Month Select -->
+                <div class="col s12">
+                    <div class="input-group input-group-outline">
+                        <label class="form-label" for="month">Month:</label>
+                        <input class="form-control" list="months" type="text" id="month" name="month"
+                               style="width: 80%;" readonly>
+                        <datalist id="months">
+
+                        </datalist>
+                    </div>
+                </div>
+
+                <!-- Day Select-->
+                <div class="col s12">
+                    <div class="input-group input-group-outline">
+                        <label class="form-label" for="day">Day</label>
+                        <input class="form-control" list="days" type="text" id="day" name="day" readonly>
+                        <datalist id="days">
+                        </datalist>
+                    </div>
+                </div>
+
+                <!-- Show Button -->
+                <div class="col s12">
+                    <div class="input-group input-group-outline">
+                        <button class="btn btn-primary" id="show" onclick="showTable()" disabled>Show</button>
+                    </div>
+                </div>
+            </div>
+            <div id="show-daily" hidden>
+                <h5 class="text-white text-left" id="daily-text">Total Spending: 0 {{content["currency"]}}</h5>
+            </div>
+        </div>
+
+
+    </div>
+</div>
+
+
+<div class="row mb-4" id="table-class" hidden>
+    <div class="mb-md-0 mb-4">
+        <div class="card">
+            <div class="card-header pb-0 bg-dark">
+                <div class="row">
+                    <div class="col-lg-6 col-7 ">
+                        <h6>Projects</h6>
+                        <p class="text-sm mb-0">
+                            <i class="fa fa-check text-info" aria-hidden="true"></i>
+                            <span class="font-weight-bold ms-1">30 done</span> this month
+                        </p>
+                    </div>
+                    <div class="col-lg-6 col-5 my-auto text-end">
+                        <div class="dropdown float-lg-end pe-4">
+                            <a class="cursor-pointer" id="dropdownTable" data-bs-toggle="dropdown"
+                               aria-expanded="false">
+                                <i class="fa fa-ellipsis-v text-secondary"></i>
+                            </a>
+                            <ul class="dropdown-menu px-2 py-3 ms-sm-n4 ms-n5" aria-labelledby="dropdownTable">
+                                <li><a class="dropdown-item border-radius-md" href="javascript:;">Action</a>
+                                </li>
+                                <li><a class="dropdown-item border-radius-md" href="javascript:;">Another
+                                    action</a></li>
+                                <li><a class="dropdown-item border-radius-md" href="javascript:;">Something else
+                                    here</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body px-0 pb-2 bg-dark">
+                <div class="table-responsive">
+                    <table class="table table-dark align-items-center mb-0" id="spend-table">
+                        <thead>
+                        <tr>
+                            {% for head in content["t_head"] %}
+                            <th class="text-uppercase text-secondary text-sm font-weight-bolder opacity-7"
+                                id="th-{{head|lower|rmspace}}">
+                                {{head}}
+                            </th>
+                            {% endfor %}
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr id="tr-ref">
+                            {% for head in content["t_head"] %}
+                            <td class="px-4 text-sm" id="td-{{head|lower|rmspace}}">
+                                <span class="text-s font-weight-bold">{{head}}</span>
+                            </td>
+                            {% endfor %}
+                        </tr>
+
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
 
 <script>
-    $('.dropdown-trigger').dropdown();
+    // Get the years from the dictionary and add them to the years datalist
+    var transaction = {{ content["transaction"] | tojson }};
+    var spendType = document.getElementById('spend-type');
+    var years = Object.keys(transaction);
+    var yearInput = document.getElementById('year-input');
+    var yearsDatalist = document.getElementById('years');
+    var monthInput = document.getElementById('month');
+    var monthsDatalist = document.getElementById('months');
+    var months = [];
+    var dayInput = document.getElementById('day');
+    var daysDatalist = document.getElementById('days');
+    var days = [];
+
+    var showDaily = document.getElementById('show-daily');
+    var dailyText = document.getElementById('daily-text');
+    var showButton = document.getElementById('show');
+
+    years.forEach(function(year) {
+        var option = document.createElement('option');
+        option.value = year;
+        yearsDatalist.appendChild(option);
+    });
+
+    spendType.addEventListener('change', function() {
+        yearInput.value = '';
+        monthInput.value = '';
+        dayInput.value = '';
+        showDaily.setAttribute('hidden', true);
+        showButton.setAttribute('disabled', true);
+        document.getElementById('table-class').setAttribute('hidden', true);
+    });
+
+    // When a year is selected, get the months for that year and add them to the months datalist
+    yearInput.addEventListener('change', function() {
+        days.length = 0;
+        daysDatalist.innerHTML = '';
+        monthsDatalist.innerHTML = '';
+        if (years.includes(this.value)) {
+            months = Object.keys(transaction[this.value]).sort();
+
+
+            // Clear the months datalist
+            while (monthsDatalist.firstChild) {
+                monthsDatalist.removeChild(monthsDatalist.firstChild);
+            }
+
+            // Add the months for the selected year to the months datalist
+            months.forEach(function(month) {
+                var option = document.createElement('option');
+                option.value = month;
+                monthsDatalist.appendChild(option);
+            });
+            monthInput.removeAttribute('readonly');
+            showButton.removeAttribute('disabled');
+
+        }
+        else {
+            monthInput.setAttribute('readonly', true);
+            monthInput.value = '';
+            dayInput.setAttribute('readonly', true);
+            dayInput.value = '';
+            showDaily.setAttribute('hidden', true);
+            showButton.setAttribute('disabled', true);
+            document.getElementById('table-class').setAttribute('hidden', true);
+        }
+
+
+    });
+
+    monthInput.addEventListener('change', function() {
+            days.length = 0;
+            daysDatalist.innerHTML = '';
+            if (months.includes(this.value)){
+                var checkItem = transaction[yearInput.value][this.value];
+                var dailySpending = 0;
+                var nonDailySpending = 0;
+
+                if (Object.keys(checkItem).includes("Daily Spending") && (spendType.value === "ALL" || spendType.value === "Daily Spending")) {
+                    dailySpending = checkItem["Daily Spending"];
+                }
+                else {
+                    dailySpending = 0;
+                }
+
+                if (Object.keys(checkItem).includes("Non-Daily Spending") && (spendType.value === "ALL" || spendType.value === "Non-Daily Spending")) {
+                    nonDailySpending = checkItem["Non-Daily Spending"];
+                }
+
+                else{
+                    nonDailySpending = 0;
+                }
+
+                Object.keys(checkItem).forEach(function(getType) {
+                    if (getType !== "Daily Spending") {
+                        var day = Object.keys(checkItem[getType]);
+                        day.forEach(function(item) {
+                            // Split the key by the "-" character to get the day, month, and year
+                            var dateParts = item.split("-");
+                            // Add the day to the days array
+                            if (!days.includes(dateParts[0])){
+                               days.push(dateParts[0]);
+                            }
+                        });
+                    }
+                });
+                days.forEach(function(day) {
+                    var option = document.createElement('option');
+                    option.value = day;
+                    daysDatalist.appendChild(option);
+                });
+                dayInput.removeAttribute('readonly');
+                dailyText.innerText = "Total Spending: " + dailySpending + " {{ content['currency'] }}";
+                showDaily.removeAttribute('hidden');
+                showButton.removeAttribute('disabled');
+<!--                console.log(days);-->
+            }
+            else {
+                dayInput.setAttribute('readonly', true);
+                dayInput.value = '';
+                showDaily.setAttribute('hidden', true);
+                showButton.setAttribute('disabled', true);
+                daysDatalist.innerHTML = '';
+                 document.getElementById('table-class').setAttribute('hidden', true);
+
+            }
+    });
+
+    dayInput.addEventListener('change', function() {
+        if (days.includes(this.value)) {
+            var checkItem = transaction[yearInput.value][monthInput.value];
+
+            var day = this.value;
+            var total = 0;
+            Object.keys(checkItem).forEach(function(getType) {
+                if (getType !== "Daily Spending") {
+                    var dayItems = checkItem[getType][day];
+                    if (dayItems) {
+                        Object.keys(dayItems).forEach(function(item) {
+                            total += dayItems[item];
+                        });
+                    }
+                }
+            });
+            showButton.removeAttribute('disabled');
+        }
+        else {
+            showButton.setAttribute('disabled', true);
+            document.getElementById('table-class').setAttribute('hidden', true);
+        }
+    });
+
+
+</script>
+
+<script>
+    var trRef = document.getElementById('tr-ref');
+    var tbody = document.querySelector('#spend-table tbody');
+
+    function data2table(data, spendType, month, date){
+        Object.keys(data).forEach(function(cashSource){
+                    var spend = data[cashSource];
+
+                    if (spendType === "ALL"){
+                        var types = ["Daily Spending", "Non-Daily Spending"];
+                    }
+                    else{
+                        var types = [spendType];
+                    }
+
+                    types.forEach(function(spendingType){
+                        if (!Object.keys(spend).includes(spendingType)){
+                            return;
+                        }
+                        var shop = spend[spendingType];
+                        Object.keys(shop).forEach(function(shopName){
+                            var item = shop[shopName];
+                            Object.keys(item).forEach(function(getItem){
+                                if (getItem !== "QTY"){
+                                    var clonedTr = trRef.cloneNode(true);
+                                    clonedTr.querySelector('#td-month span').innerText = month;
+                                    clonedTr.querySelector('#td-date span').innerText = date;
+                                    clonedTr.querySelector('#td-type span').innerText = spendingType;
+                                    clonedTr.querySelector('#td-cashsource span').innerText = cashSource;
+                                    clonedTr.querySelector('#td-shop span').innerText = shopName;
+
+                                    var strData = getItem.split("_");
+                                    clonedTr.querySelector('#td-itemname span').innerText = strData[1];
+                                    clonedTr.querySelector('#td-brandname span').innerText = strData[0];
+                                    clonedTr.querySelector('#td-quantity span').innerText = item[getItem][0];
+                                    clonedTr.querySelector('#td-unit span').innerText = strData[2];
+                                    clonedTr.querySelector('#td-price span').innerText = strData[3];
+
+                                    var totalPrice = (parseFloat(item[getItem][0]) * parseFloat(strData[3]));
+                                    var discountPrice = (parseFloat(item[getItem][1])/100.00 * parseFloat(strData[3]));
+                                    clonedTr.querySelector('#td-total span').innerText = currencyCheck("{{ content['currency'] }}", totalPrice-discountPrice);
+                                    if (discountPrice > 0){
+                                        var span = document.createElement('span');
+                                        span.className = "text-warning text-xs font-weight-bold";
+                                        span.style = "font-size: 0.65em!important;";
+                                        span.innerText = " (-" + currencyCheck("{{ content['currency'] }}", discountPrice) + "±)";
+                                        clonedTr.querySelector('#td-total span').appendChild(span);
+                                    }
+                                    tbody.appendChild(clonedTr);
+                                }
+                            });
+                        });
+                   });
+        });
+    }
+
+    function dataProcess(day, month, year, spendType, transaction, thType){
+        var raw = transaction[year][month];
+        var data = {};
+        var outData = {};
+        day = day + "-" + month.padStart(2, '0') + "-" + year;
+        Object.keys(raw).forEach(function(getType){
+            if (getType !== "Daily Spending"){
+                var dayItems = raw[getType][day];
+                if (dayItems){
+                    outData[day] = {"IN": dayItems["IN"],
+                    "OUT": dayItems["OUT"],
+                    "OUTPAY": dayItems["OUTPAY"]}
+
+                    delete dayItems["IN"];
+                    delete dayItems["OUT"];
+                    delete dayItems["OUTPAY"];
+
+                    data[getType] = dayItems;
+                }
+            }
+        });
+
+       data2table(data, spendType, month, day);
+
+    }
+
+    function showTable(){
+        document.getElementById('table-class').removeAttribute('hidden');
+        tbody.innerHTML = '';
+        var year = document.getElementById('year-input').value;
+        var month = document.getElementById('month').value;
+        var day = document.getElementById('day').value;
+        var spendType = document.getElementById('spend-type').value;
+        var transaction = {{ content["transaction"] | tojson }};
+
+        var thType = document.getElementById('th-type');
+        var thCashSource = document.getElementById('th-cashsource');
+        var thDate = document.getElementById('th-date');
+        var thMonth = document.getElementById('th-month');
+
+        if (spendType !== "ALL"){
+            thType.setAttribute('hidden', true);
+            trRef.querySelector('#td-type').setAttribute('hidden', true);
+        }
+        else{
+            thType.removeAttribute('hidden');
+            trRef.querySelector('#td-type').removeAttribute('hidden');
+        }
+
+        if (day != ""){
+            thDate.setAttribute('hidden', true);
+            trRef.querySelector('#td-date').setAttribute('hidden', true);
+            thMonth.setAttribute('hidden', true);
+            trRef.querySelector('#td-month').setAttribute('hidden', true);
+
+            dataProcess(day, month, year, spendType, transaction, thType);
+
+
+        }
+        else if (month != ""){
+            var data = transaction[year][month];
+            thDate.removeAttribute('hidden');
+            trRef.querySelector('#td-date').removeAttribute('hidden');
+            thMonth.setAttribute('hidden', true);
+            trRef.querySelector('#td-month').setAttribute('hidden', true);
+            var days = [];
+            Object.keys(data).forEach(function(source){
+                var sourceData = data[source];
+                Object.keys(sourceData).forEach(function(day){
+                    day = day.split("-")[0];
+                    if (!days.includes(day)){
+                        days.push(day);
+                    }
+                });
+            });
+
+            days.forEach(function(day){
+                dataProcess(day, month, year, spendType, transaction, thType);
+            });
+
+            console.log(day, month, year);
+        }
+        else{
+            var data = transaction[year];
+            thDate.removeAttribute('hidden');
+            trRef.querySelector('#td-date').removeAttribute('hidden');
+            thMonth.removeAttribute('hidden');
+            trRef.querySelector('#td-month').removeAttribute('hidden');
+
+            Object.keys(data).forEach(function(month){
+                var monthData = data[month];
+                var days = [];
+                Object.keys(monthData).forEach(function(source){
+                    var sourceData = monthData[source];
+                    Object.keys(sourceData).forEach(function(day){
+                        day = day.split("-")[0];
+                        if (!days.includes(day)){
+                            days.push(day);
+                        }
+                    });
+                });
+
+                days.forEach(function(day){
+                    dataProcess(day, month, year, spendType, transaction, thType);
+                });
+            });
+
+        }
+
+
+
+    }
+
 </script>

@@ -106,8 +106,7 @@ def form(form_type):
                         f"{shop_data['cash_source']}": {f"{shop_data['date']}": {"IN": 0, "OUT": 0,
                                                                                  f"{shop_data['type']}": {
                                                                                      f"{shop_data['shop_name']}": {
-                                                                                         "QTY": 0}}},
-                                                        f"{shop_data['type']}": 0}}
+                                                                                         "QTY": 0}}},}}
                 elif f"{shop_data['cash_source']}" not in LOCAL_DATA['TRANSACTION'][check_month]:
                     LOCAL_DATA['TRANSACTION'][check_month][f"{shop_data['cash_source']}"] = {
                         f"{shop_data['date']}": {"IN": 0, "OUT": 0,
@@ -298,7 +297,7 @@ def form(form_type):
     return render_template('form.html', front_data=front_data, content=value_content)
 
 
-@app.route('/table/<table_type>')
+@app.route('/table/<table_type>', methods=['GET', 'POST'])
 def table(table_type):
     os.system('cls')
 
@@ -314,11 +313,31 @@ def table(table_type):
                   "msg": "",
                   "status": INFO_LEVEL[5]}
 
-    if table_type in TRANSACTIONS_TYPE:
-        if table_type == TRANSACTIONS_TYPE[0]:
-            value_content['transactions'] = LOCAL_DATA['TRANSACTION']
+    if table_type in NAVBAR['transaction']:
+        if table_type == NAVBAR['transaction'][0]:
+            transaction_data = {}
+            for year in LOCAL_DATA['TRANSACTION']:
+                year = str(year).split("_")
+                if year[0] not in transaction_data:
+                    transaction_data[year[0]] = {f"{year[1]}": LOCAL_DATA['TRANSACTION'][f"{year[0]}_{year[1]}"]}
+                else:
+                    transaction_data[year[0]][f"{year[1]}"] = LOCAL_DATA['TRANSACTION'][f"{year[0]}_{year[1]}"]
 
-            return render_template('table.html', front_data=front_data, content=value_content)
+            value_content['transaction'] = transaction_data
+            value_content['shops'] = LOCAL_DATA['SHOPS']
+            value_content['t_head'] = ["Month", "Date", "Type", "Cash Source", "Shop", "Item Name", "Brand Name",
+                                       "Quantity", "Unit", "Price", "Total"]
+
+        else:
+            alert_data['title'] = "Table Not Exists"
+            alert_data['msg'] = f"Table {table_type} not exists."
+            alert_data['status'] = INFO_LEVEL[4]
+            flash(json.dumps(alert_data))
+
+    else:
+        abort(404)
+
+    return render_template('table.html', front_data=front_data, content=value_content)
 
 
 if __name__ == "__main__":

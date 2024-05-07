@@ -1,16 +1,38 @@
 # Finance Manager Changelog
 
+## 2-5-2024
+#### - **_ADDED_** into `script.html` to show toast
+#### - **_DONE_** `daily-table.html` to show the total of transaction
+* **Add Spend Type**
+* **Table creation done (for each input, spending type, year, month and day)**
+* **No problem with japanese letter**
+#### - **_FIXED_** bug inside `local_db.json` which code inside `app.py` wrongly saving the data
+* **Spending type not being save in correct place**
+#### - **_TODO_** sorting the table based on the user requirements and searching algorithm
+* **Sorting according to the data header**
+* **Searching algorithm to find the data based on the user input**
+#### - **_TODO-FIX_** `app.py` and `navbar.html` toast not working properly
+
+
+## 1-5-2024
+#### - **_ADJUSTED_** `daily-table.html` to show the total of transaction
+* **Right now only for input panel (year, month, date) and shows total Daily Transaction**
+* **Not doing anything to table**
+#### - **_TODO_** `daily-table.html`
+* **Create a table that can show item based on the requirements (day, month, year, transaction type, etc..)**
+* **Need to solve Japanese letter problem**
+
 ## 28-3-2024
-#### - **_CREATE_** `local_db.py` to handle all local database operations
-#### - **_CREATE_** `requirements.txt` file to list all python dependencies
-#### - **_PUSH_** to GitHub with tag local-db
-#### - **_REPLACE_** mainly some of code inside `init_setup.py`
+#### - **_CREATED_** `local_db.py` to handle all local database operations
+#### - **_CREATED_** `requirements.txt` file to list all python dependencies
+#### - **_PUSHED_** to GitHub with tag local-db
+#### - **_REPLACED_** mainly some of code inside `init_setup.py`
 * **Creating variable to check using cloud database or not**
 * **Did some adjustment on init setup saving data from firebase to local**
-#### - **_PUSH_** to GitHub with tag init-setup adjustment
+#### - **_PUSHED_** to GitHub with tag init-setup adjustment
 
 ## 27-3-2024
 #### - _**DONE**_ new-transactions form page
-#### - _**PUSH**_ to GitHub with tag new-transactions-form
+#### - _**PUSHED**_ to GitHub with tag new-transactions-form
 
 

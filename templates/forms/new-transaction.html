@@ -169,7 +169,7 @@
         </div>
 
         <div id="table-container" hidden>
-            <div class="container-fluid py-4" a>
+            <div class="container-fluid py-4">
                 <div class="row">
                     <div class="col-12">
                         <div class="card my-4 bg-gray-900">
@@ -525,7 +525,7 @@
                 document.getElementById('transaction-form').submit();
             }
 
-            window.addEventListener('beforeunload', function (e) {
+            var beforeUnloadListener = function (e) {
                 // Get the table body
                 var tbody = document.querySelector('#items-table tbody');
 
@@ -539,6 +539,13 @@
                     // Chrome requires returnValue to be set
                     e.returnValue = '';
                 }
+            };
+
+            window.addEventListener('beforeunload', beforeUnloadListener);
+
+            document.getElementById('submit-button').addEventListener('click', function() {
+                window.removeEventListener('beforeunload', beforeUnloadListener);
+                // Rest of your submit button click handler code...
             });
 
         </script>

@@ -59,5 +59,48 @@
 <script>
     $(document).ready(function(){
       $('.toast').toast('show'); // Automatically show the toast on page load
+
     });
+
+    // Select the toast container
+    var toastContainer = document.getElementById('toast-container');
+
+    // Select the audio element
+    var alertSound = document.getElementById('alert-sound');
+
+    // Add an event listener for when a toast is added to the container
+    var observer = new MutationObserver(function() {
+        // Play the alert sound
+        alertSound.play();
+    });
+
+    // Start observing the toast container for changes
+    observer.observe(toastContainer, { childList: true });
+
+    function showToast(title, msg, status) {
+        // Get the toast element
+        var toast = document.querySelector('.toast');
+
+        // Set the title, message, and status
+        toast.querySelector('.me-auto').textContent = title;
+        toast.querySelector('.toast-body').textContent = msg;
+        toast.querySelector('.toast-header').className = 'toast toast-header bg-' + status + ' text-white';
+
+        // Show the toast
+        var bootstrapToast = new bootstrap.Toast(toast);
+        bootstrapToast.show();
+    }
+
+</script>
+
+<!--MISC SCRIPT-->
+<script>
+    function currencyCheck(currency, value){
+        if (currency == "JPY"){
+            return Math.floor(parseFloat(value));
+        }
+        else{
+            return parseFloat(value).toFixed(2);
+        }
+    }
 </script>
