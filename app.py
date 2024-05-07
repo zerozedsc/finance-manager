@@ -15,6 +15,9 @@ def home():
                   "msg": "",
                   "status": INFO_LEVEL[4]}
 
+    # alert_data['title'] = "Transaction Submitted"
+    # alert_data['msg'] = f"Transaction submitted successfully. TEST"
+    # alert_data['status'] = INFO_LEVEL[1]
     # flash(json.dumps(alert_data))
 
     return render_template('index.html', front_data=front_data, value=value_content)
@@ -106,7 +109,7 @@ def form(form_type):
                         f"{shop_data['cash_source']}": {f"{shop_data['date']}": {"IN": 0, "OUT": 0,
                                                                                  f"{shop_data['type']}": {
                                                                                      f"{shop_data['shop_name']}": {
-                                                                                         "QTY": 0}}},}}
+                                                                                         "QTY": 0}}}, }}
                 elif f"{shop_data['cash_source']}" not in LOCAL_DATA['TRANSACTION'][check_month]:
                     LOCAL_DATA['TRANSACTION'][check_month][f"{shop_data['cash_source']}"] = {
                         f"{shop_data['date']}": {"IN": 0, "OUT": 0,
@@ -338,6 +341,25 @@ def table(table_type):
         abort(404)
 
     return render_template('table.html', front_data=front_data, content=value_content)
+
+
+@app.route('/cash_source/<source>', methods=['GET', 'POST'])
+def cash_source(source):
+    os.system('cls')
+
+    page_title = "Cash Source"
+    front_data = {"title": [MAIN_TITLE, page_title, "Tables",
+                            "Cash Source"],
+                  "navbar": NAVBAR,
+                  }
+    value_content = {
+        "currency": CURRENCY,
+    }
+    alert_data = {"title": "",
+                    "msg": "",
+                    "status": INFO_LEVEL[5]}
+
+    return render_template('cash_source.html', front_data=front_data, content=value_content)
 
 
 if __name__ == "__main__":

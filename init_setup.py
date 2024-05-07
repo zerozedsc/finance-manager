@@ -17,7 +17,7 @@ TRANSACTIONS_TYPE = ['Daily Spending', 'Non-Daily Spending', 'Bills', 'Scholarsh
 FORM_TYPE = ["new-transaction"]
 
 # navbar data
-NAVBAR = {"transaction": [k for k in ['Spending', 'Bills&Subscription', 'Scholarship&Jobs']], }
+NAVBAR = {"transaction": [k for k in ['Spending', "SpendingItemList", 'Bills&Subscription', 'Scholarship&Jobs']], }
 
 # start collecting require data from local, if firebase true then check firebase data
 with app.app_context():
@@ -55,6 +55,8 @@ with app.app_context():
 
     else:
         create_logs("cloud-save-check", "app", "Cloud save is off", status='warning')
+
+NAVBAR["cash_source"] = LOCAL_DATA['CASH_SOURCE'].keys()
 
 
 app.jinja_env.filters['fromjson'] = from_json

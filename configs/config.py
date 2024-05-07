@@ -9,9 +9,10 @@ CURRENCY = "JPY"
 DATETIME_FT = '%d-%m-%Y %H:%M:%S'
 DATE_FT = '%d-%m-%Y'
 CLOUD_SAVE = False
+FIREBASE_DB_USE = False
 LOCAL_DATA = {}
+
 DEBUG = True
-FIREBASE_DB_USE = True
 
 
 # logs function
@@ -165,9 +166,11 @@ def compare_datetime(datetime_str1, datetime_str2) -> bool:
 def from_json(value):
     try:
         if type(value) is dict:
-            value = json.dumps(value)
-        send_json = jsonify(value)
-        return send_json
+            return value
+        elif type(value) is str:
+            return json.loads(value)
+        else:
+            return {"error": "Invalid data type"}
     except json.JSONDecodeError as e:
         create_logs("from_json", "app", f"convert to json.JSONDecodeError error: {e}", status='error')
         return {}
@@ -175,6 +178,8 @@ def from_json(value):
     except Exception as e:
         create_logs("from_json", "app", f"convert to json error: {e}", status='error')
         return {}
+
+    return {}
 
 
 def get_type(value):

@@ -1,5 +1,18 @@
 # Finance Manager Changelog
 
+## 7-5-2024
+#### - **_TODO_** focus on cash source page (bank, cash hand, etc..)
+* **Create a page to show all account**
+* **Create a page to add new account**
+* **Create a page to edit account**
+* **Create a page to delete account**
+* **Create a page to show all transaction based on account**
+#### - **_FIXED_** bug in `config.py` where function `from_json` not returning dict because of flask.jsonify
+* **Change `flask.jsonify` to `json.loads`**
+#### - **_ADDED_** cash source panel `cash_source.py`, with dropdown navbar to choose cash source type 
+
+
+
 ## 2-5-2024
 #### - **_ADDED_** into `script.html` to show toast
 #### - **_DONE_** `daily-table.html` to show the total of transaction

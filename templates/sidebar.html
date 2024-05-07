@@ -14,7 +14,7 @@
     <hr class="horizontal light mt-0 mb-2">
     <div class="collapse navbar-collapse  w-auto " id="sidenav-collapse-main">
         <ul class="navbar-nav">
-            {% set pagename = ['Main Dashboard', 'Tables']%}
+            {% set pagename = ['Main Dashboard', 'Tables', 'Cash Source']%}
             <li class="nav-item">
                 <a class="nav-link text-white {{ 'active bg-gradient-primary' if front_data['title'][2] == pagename[0] else '' }}"
                    href="{{ url_for('home') }}">
@@ -48,11 +48,26 @@
                 </ul>
             </li>
             <li class="nav-item">
-                <a class="nav-link text-white " href="../pages/billing.html">
+                <a class="nav-link dropdown-toggle text-white {{ 'active bg-gradient-primary' if front_data['title'][2] == pagename[1] else '' }}"
+                   href="#" id="navbarDropdown" role="button"
+                   data-bs-toggle="dropdown" aria-expanded="true">
                     <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
                         <i class="material-icons opacity-10">receipt_long</i>
                     </div>
-                    <span class="nav-link-text ms-1">Billing</span>
+                    <span class="nav-link-text ms-1">{{pagename[2]}}</span>
+                </a>
+                    <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end" aria-labelledby="navbarDropdown">
+                    {% for t_name in front_data['navbar']['cash_source'] %}
+                    <li class="nav-link"><a class="dropdown-item nav text-white" href="/cash_source/{{t_name}}">
+
+                        <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
+                            <i class="material-icons opacity-10">segment</i>
+                        </div>
+                        <span class="nav-link-text ms-1">{{t_name}}</span></a></li>
+                    {% endfor %}
+
+                    <!-- Add more items here as needed -->
+                </ul>
                 </a>
             </li>
             <li class="nav-item">
@@ -88,22 +103,6 @@
                         <i class="material-icons opacity-10">person</i>
                     </div>
                     <span class="nav-link-text ms-1">Profile</span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link text-white " href="../pages/sign-in.html">
-                    <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
-                        <i class="material-icons opacity-10">login</i>
-                    </div>
-                    <span class="nav-link-text ms-1">Sign In</span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link text-white " href="../pages/sign-up.html">
-                    <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
-                        <i class="material-icons opacity-10">assignment</i>
-                    </div>
-                    <span class="nav-link-text ms-1">Sign Up</span>
                 </a>
             </li>
         </ul>

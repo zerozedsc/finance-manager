@@ -2,6 +2,7 @@
 <div id="toast-container">
     {% with messages = get_flashed_messages() %}
     {% for serialized_message in messages %}
+
     {% set message = serialized_message | fromjson %}
     <div class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="3500"
          data-bs-autohide="true">
